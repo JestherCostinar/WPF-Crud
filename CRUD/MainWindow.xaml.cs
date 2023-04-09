@@ -31,6 +31,7 @@ namespace CRUD
 
             sqlConnection = new SqlConnection(connectionString);
             DisplayStores();
+            DisplayStoreInventory();
             DisplayAllProducts();
         }
 
@@ -86,7 +87,7 @@ namespace CRUD
             {
                 string query = "SELECT * FROM Product";
                 SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, sqlConnection);
 
                 using (sqlDataAdapter)
                 {
@@ -139,7 +140,23 @@ namespace CRUD
 
         private void DeleteStoreClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                string query = "DELETE FROM Store WHERE id = @StoreId";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@StoreId", storeList.SelectedIndex+1);
+                sqlCommand.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                DisplayStores();
+            }
         }
 
         private void AddInventoryClick(object sender, RoutedEventArgs e)
@@ -160,13 +177,29 @@ namespace CRUD
             finally
             {
                 sqlConnection.Close();
-                DisplayStores();
+                DisplayStoreInventory();
             }
         }
 
         private void DeleteInventoryClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                string query = "DELETE FROM StoreInventory WHERE ProductId = @ProductId";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@ProductId", storeInventoryList.SelectedIndex+1);
+                sqlCommand.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                DisplayStoreInventory();
+            }
         }
 
         private void AddProductClick(object sender, RoutedEventArgs e)
@@ -199,7 +232,23 @@ namespace CRUD
 
         private void DeleteProductClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                string query = "DELETE FROM Product WHERE Id = @ProductId";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@ProductId", productList.SelectedIndex+1);
+                sqlCommand.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                DisplayAllProducts();
+            }
         }
     }
 }
