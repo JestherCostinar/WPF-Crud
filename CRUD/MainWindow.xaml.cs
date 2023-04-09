@@ -124,7 +124,6 @@ namespace CRUD
                 sqlConnection.Open();
                 sqlCommand.Parameters.AddRange(parameters.ToArray());
                 DataTable storeTable = new DataTable();
-
                 using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand)) adapter.Fill(storeTable);
             }
             catch (Exception ex)
@@ -145,7 +144,24 @@ namespace CRUD
 
         private void AddInventoryClick(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                string query = "INSERT INTO StoreInventory (StoreId, ProductId) VALUES (@StoreId, @ProductId)";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@StoreId", storeList.SelectedValue);
+                sqlCommand.Parameters.AddWithValue("@ProductId", productList.SelectedValue);
+                sqlCommand.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                DisplayStores();
+            }
         }
 
         private void DeleteInventoryClick(object sender, RoutedEventArgs e)
@@ -155,7 +171,30 @@ namespace CRUD
 
         private void AddProductClick(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>() {
+                    new SqlParameter("@Manufacturer", SqlDbType.NVarChar) { Value = productManufacturer.Text },
+                    new SqlParameter("@Brand", SqlDbType.NVarChar) { Value = productName.Text },
+                };
 
+                string query = "INSERT INTO Product (Manufacturer, Brand) VALUES (@Manufacturer, @Brand)";
+                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+                sqlConnection.Open();
+                sqlCommand.Parameters.AddRange(parameters.ToArray());
+                DataTable productTable = new DataTable();
+                using (SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand)) adapter.Fill(productTable);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                sqlConnection.Close();
+                DisplayAllProducts();
+            }
         }
 
         private void DeleteProductClick(object sender, RoutedEventArgs e)
